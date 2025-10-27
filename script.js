@@ -234,36 +234,7 @@ window.addEventListener("scroll", () => {
   progressBar.style.width = scrollPercent + "%"
 })
 
-// Cursor trail effect
-const cursorTrail = []
-const trailLength = 10
-
-document.addEventListener("mousemove", (e) => {
-  const trail = document.createElement("div")
-  trail.style.position = "fixed"
-  trail.style.width = "8px"
-  trail.style.height = "8px"
-  trail.style.borderRadius = "50%"
-  trail.style.background = "rgba(249, 115, 22, 0.5)"
-  trail.style.pointerEvents = "none"
-  trail.style.left = e.clientX + "px"
-  trail.style.top = e.clientY + "px"
-  trail.style.transform = "translate(-50%, -50%)"
-  trail.style.zIndex = "9998"
-  trail.style.animation = "particles 0.8s ease-out forwards"
-
-  document.body.appendChild(trail)
-  cursorTrail.push(trail)
-
-  if (cursorTrail.length > trailLength) {
-    const oldTrail = cursorTrail.shift()
-    oldTrail.remove()
-  }
-
-  setTimeout(() => {
-    trail.remove()
-  }, 800)
-})
+  
 
 const heroTitle = document.querySelector(".hero-title")
 if (heroTitle) {
