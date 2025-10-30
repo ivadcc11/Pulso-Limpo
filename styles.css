@@ -24,6 +24,48 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ---------- Page load animation control ----------
+   Pausa animações e transições até que a página esteja carregada.
+   Isso evita movimentos indesejados e flicker no carregamento inicial.
+   A classe `is-loaded` é adicionada ao <html> via JS quando o evento
+   window.load for disparado. Usuários que preferem reduzir movimento
+   continuarão protegidos por media query. */
+
+html:not(.is-loaded) * {
+  /* Pausa a execução de animações CSS e transições até carregar */
+  animation-play-state: paused !important;
+  transition: none !important;
+}
+
+/* Fade-in suave após carregamento para evitar aparecimento brusco */
+html:not(.is-loaded) body {
+  opacity: 0;
+  will-change: auto;
+}
+
+html.is-loaded body {
+  opacity: 1;
+  transition: opacity 320ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Respeitar preferência do usuário – manter tudo estático */
+  html:not(.is-loaded) *,
+  html.is-loaded * {
+    animation: none !important;
+    transition: none !important;
+  }
+  html.is-loaded body {
+    transition: none !important;
+  }
+}
+
+/* Compensar header fixo ao usar âncoras: aplica uma margem de rolagem
+   para que o conteúdo não fique oculto atrás do header. Ajuste em px se necessário. */
+[id] {
+  scroll-margin-top: 90px;
+}
+
 body {
   font-family: var(--font-family);
   line-height: 1.6;
@@ -309,6 +351,7 @@ body {
   }
 }
 
+
 /* Header */
 .header {
   position: fixed;
@@ -460,6 +503,9 @@ body {
   background-attachment: fixed;
   margin-top: 70px;
   overflow: hidden;
+  /* Efeito de profundidade e movimento suave */
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 /* Added animated particles background */
@@ -484,9 +530,8 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(30, 58, 138, 0.92) 0%, rgba(59, 130, 246, 0.85) 100%);
-  background-size: 200% 200%;
-  animation: fadeIn 1s ease, gradientShift 10s ease infinite;
+  background: linear-gradient(to bottom, rgba(30, 58, 138, 0.95), rgba(30, 58, 138, 0.7));
+  z-index: 0;
 }
 
 .hero-content {
@@ -495,6 +540,7 @@ body {
   max-width: 700px;
   color: var(--color-white);
   padding: 2rem 0;
+  transform: translateZ(50px);
 }
 
 .hero-title {
@@ -594,6 +640,15 @@ body {
   animation: borderPulse 1s ease-in-out;
 }
 
+/* Make specific buttons static when class no-motion is present */
+.no-motion {
+  /* keep visual appearance but prevent movement */
+  transform: none !important;
+}
+.no-motion:hover {
+  transform: none !important;
+}
+
 .btn-large {
   padding: 1rem 2.5rem;
   font-size: 1.125rem;
@@ -604,6 +659,18 @@ body {
   text-align: center;
   max-width: 700px;
   margin: 0 auto 3rem;
+}
+
+/* Evita que o título da seção do formulário flutue sobre outros conteúdos ao rolar.
+   Reservamos um pequeno bloco com background para o título e criamos um novo contexto
+   de empilhamento para prevenir sobreposição de textos animados. */
+.form-section .section-header {
+  position: relative;
+  z-index: 2;
+}
+
+.form-section .section-title {
+  display: inline-block;
 }
 
 .section-title {
@@ -626,8 +693,6 @@ body {
   height: 4px;
   background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
   border-radius: 2px;
-  /* Added animation to underline */
-  animation: slideInLeft 0.8s ease 0.3s both;
 }
 
 .section-description {
@@ -649,10 +714,16 @@ body {
   background-color: var(--color-white);
   padding: 3rem;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.06),
+    inset 0 2px 0 rgba(255,255,255,0.1);
   transition: var(--transition);
-  /* Added entrance animation */
   animation: scaleIn 0.6s ease;
+  border: 1px solid rgba(30,58,138,0.08);
+  backdrop-filter: blur(20px);
+  background: linear-gradient(180deg, 
+    rgba(255,255,255,1) 0%,
+    rgba(248,250,252,0.95) 100%);
 }
 
 .form:hover {
@@ -662,41 +733,99 @@ body {
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.75rem;
+  margin-bottom: 2rem;
+  align-items: start;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
+  position: relative;
+  height: auto;
+  margin-bottom: 1rem;
 }
 
 .form-label {
-  font-weight: 600;
-  color: var(--color-dark);
+  font-weight: 500;
+  color: var(--color-gray);
+  font-size: 0.875rem;
+  display: block;
   margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-  transition: var(--transition);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ícones para os campos */
+.form-group::before {
+  display: none;
+}
+
+.form-group:has(input[type="tel"])::before { content: "📱"; }
+.form-group:has(input[type="email"])::before { content: "📧"; }
+.form-group:has(input[type="number"])::before { content: "📅"; }
+.form-group:has(select[name="substance"])::before { content: "💊"; }
+.form-group:has(select[name="duration"])::before { content: "⏳"; }
+.form-group:has(input[name="city"])::before { content: "📍"; }
+.form-group:has(select[name="urgency"])::before { content: "🚨"; }
+.form-group:has(textarea)::before { content: "✏️"; }
+
+/* Label animation on focus/filled */
+.form-group:focus-within .form-label,
+.form-input:not(:placeholder-shown) + .form-label {
+  transform: translateY(-1.75rem) translateX(-1.5rem) scale(0.85);
+  color: var(--color-primary);
+}
+
+.form-group:focus-within::before {
+  color: var(--color-primary);
 }
 
 .form-input {
-  padding: 0.875rem;
-  border: 2px solid var(--color-gray-light);
-  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--color-gray-light);
+  border-radius: 12px;
   font-size: 1rem;
   font-family: var(--font-family);
-  transition: all 0.3s ease;
-  background-color: var(--color-white);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: rgba(255,255,255,0.8);
+  box-shadow: 
+    inset 0 2px 4px rgba(16,24,40,0.03),
+    0 0 0 3px transparent;
+  width: 100%;
+  position: relative;
+  backdrop-filter: blur(8px);
+  color: var(--color-dark);
+}
+
+/* Estilizar selects */
+select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23475569' viewBox='0 0 16 16'%3E%3Cpath d='M8 10l4-4H4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-  transform: translateY(-2px);
-  /* Added pulse animation on focus */
-  animation: borderPulse 1s ease-in-out;
+  box-shadow: 
+    0 4px 12px rgba(30,58,138,0.08),
+    0 0 0 3px rgba(59,130,246,0.15);
+  background-color: rgba(255,255,255,1);
+}
+
+/* Placeholder mais sutil */
+.form-input::placeholder {
+  color: transparent;
+}
+
+/* Textarea com altura mínima */
+textarea.form-input {
+  min-height: 120px;
+  line-height: 1.6;
+  resize: vertical;
 }
 
 .form-input:focus + .form-label {
@@ -706,12 +835,74 @@ body {
 .form-textarea {
   resize: vertical;
   min-height: 120px;
+  border-radius: 12px;
+  padding: 1rem;
 }
 
 .form-actions {
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
+}
+
+.form .btn-primary {
+  padding: 1.25rem 4rem;
+  font-size: 1.125rem;
+  box-shadow: 
+    0 12px 32px rgba(234,88,12,0.25),
+    0 2px 0 rgba(255,255,255,0.1) inset,
+    0 -1px 0 rgba(0,0,0,0.1) inset;
+  border-radius: 16px;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  background-image: linear-gradient(135deg, 
+    var(--color-accent) 0%, 
+    #ea580c 100%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.form .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 16px 40px rgba(234,88,12,0.3),
+    0 2px 0 rgba(255,255,255,0.1) inset,
+    0 -1px 0 rgba(0,0,0,0.1) inset;
+  background-position: 0 0;
+}
+
+.form .btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 8px 20px rgba(234,88,12,0.2),
+    0 2px 0 rgba(255,255,255,0.1) inset,
+    0 -1px 0 rgba(0,0,0,0.1) inset;
+}
+
+/* Efeito de brilho no hover */
+.form .btn-primary::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 50%);
+  transform: scale(0);
+  transition: transform 0.6s ease-out;
+}
+
+.form .btn-primary:hover::before {
+  transform: scale(1);
+}
+
+/* subtle hover for submit */
+.form .btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
 }
 
 .form-success {
@@ -786,52 +977,109 @@ body {
 }
 
 .feature-item {
+  position: relative;
   display: flex;
   gap: 1.5rem;
   padding: 1.5rem;
   border-radius: 12px;
   background-color: var(--color-light);
-  transition: all 0.4s ease;
   border: 2px solid transparent;
+  z-index: 0;
+  overflow: visible;
+}
+
+/* Gradient border glow using pseudo-elements */
+.feature-item::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary), var(--color-accent));
+  z-index: -2;
+  filter: blur(6px);
+  opacity: 0.9;
+  background-size: 200% 200%;
+  animation: gradientShift 6s linear infinite;
+}
+
+.feature-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: var(--color-light);
+  z-index: -1;
 }
 
 .feature-item:hover {
-  transform: translateX(10px);
   background-color: var(--color-white);
   border-color: var(--color-primary);
-  box-shadow: 0 8px 25px rgba(30, 58, 138, 0.15);
-  /* Added swing animation on hover */
-  animation: swing 0.6s ease;
+  box-shadow: 0 8px 25px rgba(30,58,138,0.15);
+}
+
+/* pequenas transições e hover para títulos das features */
+.feature-item {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.feature-title {
+  font-size: 1.125rem;
+  margin: 0;
+  color: var(--color-dark);
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+/* Hover: aumentar título e mudar cor dentro da seção 'Sobre' */
+.about-section .feature-item:hover .feature-title {
+  transform: scale(1.06);
+  color: var(--color-accent);
+}
+
+/* Hover para títulos na seção de contato e CTA */
+.contact-section .section-title,
+.cta-card .cta-title {
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.contact-section .section-title:hover,
+.cta-card:hover .cta-title {
+  transform: scale(1.06);
+  color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-title,
+  .contact-section .section-title,
+  .cta-card .cta-title {
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 .feature-icon {
   font-size: 2.5rem;
   flex-shrink: 0;
-  /* Enhanced floating animation with rotation */
-  animation: float 3s ease-in-out infinite, wave 4s ease-in-out infinite;
+  /* Floating animation only (rotation removed) */
+  animation: float 3s ease-in-out infinite;
 }
 
 .feature-item:nth-child(2) .feature-icon {
-  animation-delay: 0.5s, 0.7s;
+  animation-delay: 0.5s;
 }
 
 .feature-item:nth-child(3) .feature-icon {
-  animation-delay: 1s, 1.4s;
+  animation-delay: 1s;
 }
 
-.feature-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 0.5rem;
+.feature-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  /* No animations */
 }
-
-.feature-text {
-  color: var(--color-dark);
-  line-height: 1.7;
-  font-weight: 500;
+.feature-item:nth-child(2) .feature-icon,
+.feature-item:nth-child(3) .feature-icon {
+  animation-delay: 0s !important;
 }
-
 .about-image {
   border-radius: 16px;
   overflow: hidden;
@@ -878,17 +1126,23 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+  /* garantir que os cards na grid tenham altura igual para alinhar estrelas */
+  align-items: stretch;
 }
 
 .testimonial-card {
   background-color: var(--color-white);
-  padding: 2.5rem;
+  /* reduzir ligeiramente o padding superior para aproximar o nome do topo */
+  padding: 2rem 2.5rem;
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   border: 2px solid transparent;
   position: relative;
   overflow: hidden;
+  /* Layout column to keep stars, text and author aligned consistently */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Added gradient border effect on hover */
@@ -918,10 +1172,19 @@ body {
 
 .testimonial-stars {
   color: var(--color-accent);
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  /* Added twinkling animation to stars */
-  animation: fadeIn 0.6s ease, blink 2s ease-in-out infinite;
+  /* aumento sutil para maior destaque */
+  font-size: 1.5rem;
+  margin: 0 0 1rem 0;
+  /* centraliza horizontalmente */
+  text-align: center;
+  width: 100%;
+  /* Make stars static (disable twinkling) */
+  animation: none !important;
+  opacity: 1 !important;
+  /* colocar as estrelas ao final do card */
+  order: 3;
+  /* empurra para o final do card */
+  margin-top: auto;
 }
 
 .testimonial-text {
@@ -929,6 +1192,8 @@ body {
   color: var(--color-dark);
   line-height: 1.8;
   margin-bottom: 1.5rem;
+  /* ocupa o espaço disponível para empurrar as estrelas para baixo */
+  flex: 1 1 auto;
   font-style: italic;
   font-weight: 500;
 }
@@ -937,35 +1202,168 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
+  /* push author to bottom so all avatars line up across cards */
+  margin-top: -6px;
+  /* garantir que o autor fique no topo do cartão */
+  order: 0;
+}
+
+/* garantir ordem do texto entre autor e estrelas */
+.testimonial-text {
+  order: 1;
 }
 
 .author-avatar {
-  width: 50px;
-  height: 50px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
+  /* Gradiente azul mais rico para aparência moderna */
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
   color: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.25rem;
-  box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
-  transition: var(--transition);
-  background-size: 200% 200%;
-  animation: gradientShift 3s ease infinite;
+  font-size: 1.05rem;
+  line-height: 1;
+  box-shadow: 0 8px 20px rgba(16, 24, 40, 0.18), inset 0 -4px 8px rgba(0,0,0,0.06);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  background-size: cover;
+  animation: none !important;
+  position: relative;
+  /* Borda branca opaca para destaque sobre o fundo azul */
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  /* Pequeno contraste adicional via outline para maior legibilidade em fundos variados */
+  outline: 1px solid rgba(0,0,0,0.04);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.12);
+  letter-spacing: 0.4px;
+}
+
+/* Remover o círculo/avatar visualmente e dar destaque ao nome */
+.author-avatar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
 }
 
 .testimonial-card:hover .author-avatar {
-  transform: scale(1.1) rotate(5deg);
-  /* Added heartbeat animation */
-  animation: heartbeat 0.6s ease, gradientShift 3s ease infinite;
+  /* Keep avatar visually highlighted but remove movement/rotation when card is hovered */
+  transform: none;
+  animation: none !important;
+}
+
+/* Hover sutil para avatares (apenas em pointer: fine) */
+@media (hover: hover) and (pointer: fine) {
+  .author-avatar:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 36px rgba(16, 24, 40, 0.22), inset 0 -4px 10px rgba(0,0,0,0.07);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .author-avatar,
+  .author-avatar:hover {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Subtle hover animation on the avatar itself */
+.author-avatar {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+/* Decorative pulsating ring and stronger hover */
+.author-avatar::after {
+  /* decorative glow removed to keep avatar static */
+  content: "";
+  display: none !important;
+}
+
+.author-avatar::before {
+  /* decorative border removed to prevent animated color effects */
+  content: "";
+  display: none !important;
+}
+
+.author-avatar:hover::before {
+  transform: translate(-50%, -50%) scale(1.12);
+  filter: blur(4px);
+  opacity: 1;
+}
+.author-avatar:hover {
+  /* Keep hover subtle and without rotation */
+  transform: none;
+  box-shadow: 0 6px 18px rgba(30, 58, 138, 0.28);
+}
+
+.author-avatar:hover::after {
+  transform: translate(-50%, -50%) scale(1.45);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .author-avatar {
+    transition: none;
+    transform: none;
+    box-shadow: 0 4px 15px rgba(30, 58, 138, 0.22);
+    animation: none !important;
+  }
+  .author-avatar::after {
+    transition: none;
+    opacity: 0;
+  }
+  .author-avatar::before {
+    transition: none;
+    opacity: 0;
+    filter: none;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .author-avatar:hover {
+    transform: none;
+    box-shadow: 0 4px 15px rgba(30, 58, 138, 0.22);
+  }
 }
 
 .author-name {
   font-weight: 700;
   color: var(--color-dark);
   font-size: 1.05rem;
+}
+
+/* Destaque visual para o nome (barra à esquerda + tipografia mais forte) */
+.author-name {
+  font-weight: 800;
+  color: var(--color-primary);
+  font-size: 1.125rem;
+  display: inline-block;
+  padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(30,58,138,0.04);
+  position: relative;
+}
+
+.author-name::before {
+  /* barra removida por solicitação; manter como none para fácil reversão */
+  display: none;
+  content: "";
+}
+
+.testimonial-author > div {
+  /* coloca nome e local lado a lado */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.author-location {
+  display: inline-block;
+  margin-top: 0;
+  color: var(--color-gray);
+  font-size: 0.9rem;
 }
 
 .author-location {
@@ -1006,28 +1404,105 @@ body {
   align-items: flex-start;
   padding: 1.25rem;
   border-radius: 12px;
-  /* Fixed incomplete CSS and removed backslash */
+  /* Gradient border similar to .feature-item */
+  position: relative;
   background-color: var(--color-light);
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  z-index: 0;
+  overflow: visible;
 }
 
 .contact-item:hover {
   background-color: var(--color-white);
   border-color: var(--color-primary);
-  transform: translateX(10px);
+  /* remove movement on hover (keep visual highlight only) */
   box-shadow: 0 8px 25px rgba(30, 58, 138, 0.1);
+}
+
+/* Gradient border for contact items using pseudo elements */
+.contact-item::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary), var(--color-accent));
+  z-index: -2;
+  filter: blur(6px);
+  opacity: 0.9;
+  background-size: 200% 200%;
+  animation: gradientShift 6s linear infinite;
+}
+
+.contact-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: var(--color-light);
+  z-index: -1;
 }
 
 .contact-icon {
   font-size: 1.75rem;
   flex-shrink: 0;
-  transition: var(--transition);
-  animation: float 3s ease-in-out infinite;
+  transition: transform 180ms ease, color 180ms ease;
+  /* icons static for calmer UX */
+  animation: none !important;
+}
+
+/* subtle floating / wave animation for contact icons (reloginho, telefone, balão, carta)
+   Aplicamos um float suave na maioria e um wave (oscilar) no telefone para destaque.
+   Mantemos stagger via animation-delay e respeitamos prefers-reduced-motion. */
+@media (hover: hover) and (pointer: fine) {
+  /* Reloginho (ítem 1) - leve flutuação */
+  .contact-item:nth-child(1) .contact-icon {
+    animation: float 3s ease-in-out infinite;
+    animation-fill-mode: both;
+    animation-delay: 0s;
+  }
+
+  /* Telefone (ítem 2) - pequena oscilação tipo 'olho' */
+  .contact-item:nth-child(2) .contact-icon {
+    animation: wave 3s ease-in-out infinite;
+    transform-origin: 50% 60%;
+    animation-fill-mode: both;
+    animation-delay: 0.2s;
+  }
+
+  /* Balão de mensagem (ítem 3) - leve flutuação */
+  .contact-item:nth-child(3) .contact-icon {
+    animation: float 3.2s ease-in-out infinite;
+    animation-fill-mode: both;
+    animation-delay: 0.4s;
+  }
+
+  /* Carta/envelope (ítem 4) - leve flutuação, com delay */
+  .contact-item:nth-child(4) .contact-icon {
+    animation: float 3.4s ease-in-out infinite;
+    animation-fill-mode: both;
+    animation-delay: 0.6s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  .contact-item .contact-icon {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+
+/* Garantir que animações sejam desabilitadas para usuários que preferem reduzir movimento */
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  .contact-item .contact-icon {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 .contact-item:hover .contact-icon {
-  transform: scale(1.2) rotate(10deg);
+  transform: none;
 }
 
 .contact-label {
@@ -1035,6 +1510,7 @@ body {
   color: var(--color-gray);
   margin-bottom: 0.25rem;
   font-weight: 600;
+  transition: transform 180ms ease, color 180ms ease;
 }
 
 .contact-value {
@@ -1042,11 +1518,35 @@ body {
   font-weight: 700;
   color: var(--color-primary);
   text-decoration: none;
-  transition: var(--transition);
+  transition: transform 180ms ease, color 180ms ease;
 }
 
 .contact-value:hover {
   color: var(--color-accent);
+}
+
+/* Hover: aumentar levemente e trocar cor do label/valor/ícone nas entradas de contato */
+.contact-item:hover .contact-label,
+.contact-item:hover .contact-value {
+  transform: scale(1.05);
+  color: var(--color-accent);
+}
+
+.contact-item:hover .contact-icon {
+  transform: scale(1.08);
+  color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-icon,
+  .contact-label,
+  .contact-value,
+  .contact-item:hover .contact-icon,
+  .contact-item:hover .contact-label,
+  .contact-item:hover .contact-value {
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 .cta-card {

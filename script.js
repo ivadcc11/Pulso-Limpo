@@ -2,6 +2,14 @@
 const mobileMenuBtn = document.getElementById("mobileMenuBtn")
 const nav = document.getElementById("nav")
 
+// Adiciona classe `is-loaded` ao <html> quando todos os recursos estiverem carregados.
+// Isso permite pausar animações/transições até o carregamento completo e evitar
+// flicker/movimentos indesejados na renderização inicial.
+window.addEventListener('load', () => {
+  // Pequeno timeout para garantir que pintura inicial tenha ocorrido
+  setTimeout(() => document.documentElement.classList.add('is-loaded'), 50)
+})
+
 mobileMenuBtn.addEventListener("click", () => {
   mobileMenuBtn.classList.toggle("active")
   nav.classList.toggle("active")
@@ -85,17 +93,14 @@ recoveryForm.addEventListener("submit", (e) => {
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   anchor.addEventListener("click", function (e) {
     e.preventDefault()
-    const target = document.querySelector(this.getAttribute("href"))
+    const href = this.getAttribute("href")
+    // ignore plain '#' links
+    if (href === "#") return
 
+    const target = document.querySelector(href)
     if (target) {
-      const headerOffset = 80
-      const elementPosition = target.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      })
+      // Use native scrollIntoView which respects `scroll-margin-top` set in CSS
+      target.scrollIntoView({ behavior: "smooth", block: "start" })
     }
   })
 })
@@ -124,7 +129,7 @@ document.querySelectorAll(".testimonial-card, .feature-item, .contact-item").for
 })
 
 const scrollRevealElements = document.querySelectorAll(
-  ".section-header, .form, .about-content, .about-image, .testimonial-card, .feature-item, .contact-item, .contact-cta",
+  ".form, .about-content, .about-image, .testimonial-card, .feature-item, .contact-item, .contact-cta",
 )
 
 const scrollRevealObserver = new IntersectionObserver(
@@ -172,7 +177,8 @@ function animateCounter(element, target, duration = 2000) {
   }, 16)
 }
 
-const cards = document.querySelectorAll(".testimonial-card, .feature-item, .contact-item")
+// Exclude .feature-item and .contact-item so About and Contact sections remain static
+const cards = document.querySelectorAll(".testimonial-card")
 
 cards.forEach((card) => {
   card.addEventListener("mouseenter", function () {
@@ -199,10 +205,9 @@ cards.forEach((card) => {
 })
 
 // Floating animation to form labels
-const formLabels = document.querySelectorAll(".form-label")
-formLabels.forEach((label, index) => {
-  label.style.animation = `float 3s ease-in-out infinite ${index * 0.2}s`
-})
+// Floating animation to form labels (removed to keep labels static)
+// Previously labels received a continuous 'float' animation which caused
+// vertical motion. Removed per design request so form labels remain static.
 
 // Staggered fade-in for testimonial cards
 const testimonialCards = document.querySelectorAll(".testimonial-card")
@@ -212,7 +217,8 @@ testimonialCards.forEach((card, index) => {
 })
 
 // Hover sound effect simulation (visual feedback)
-const interactiveElements = document.querySelectorAll(".btn, .nav-link, .contact-item, .feature-item")
+// Exclude buttons marked with .no-motion so they stay static
+const interactiveElements = document.querySelectorAll(".btn:not(.no-motion), .nav-link")
 interactiveElements.forEach((element) => {
   element.addEventListener("mouseenter", function () {
     this.style.transition = "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)"
@@ -234,7 +240,8 @@ window.addEventListener("scroll", () => {
   progressBar.style.width = scrollPercent + "%"
 })
 
-  
+// Cursor trail effect
+// Cursor trail effect removed (performance/UX)
 
 const heroTitle = document.querySelector(".hero-title")
 if (heroTitle) {
@@ -259,8 +266,8 @@ if (heroTitle) {
   setTimeout(typeWriter, 1000)
 }
 
-// Magnetic effect to buttons
-const buttons = document.querySelectorAll(".btn")
+// Magnetic effect to buttons (exclude .no-motion)
+const buttons = document.querySelectorAll(".btn:not(.no-motion)")
 buttons.forEach((button) => {
   button.addEventListener("mousemove", function (e) {
     const rect = this.getBoundingClientRect()
@@ -299,6 +306,51 @@ buttons.forEach((button) => {
   })
 })
 
+// About section progressive text reveal (soft typewriter-like)
+function revealParagraphText(p) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    p.style.opacity = '1'
+    return
+  }
+
+  const text = p.textContent.trim()
+  if (!text) return
+  p.textContent = ''
+  const chars = Array.from(text)
+  chars.forEach((ch, i) => {
+    const span = document.createElement('span')
+    span.textContent = ch
+    span.style.opacity = '0'
+    span.style.whiteSpace = 'pre-wrap'
+    p.appendChild(span)
+    setTimeout(() => {
+      span.style.transition = 'opacity 30ms linear'
+      span.style.opacity = '1'
+    }, i * 25)
+  })
+}
+
+function setupSectionReveal(sectionSelector, paragraphSelector) {
+  const section = document.querySelector(sectionSelector)
+  if (!section) return
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const paragraphs = section.querySelectorAll(paragraphSelector)
+        paragraphs.forEach((p) => revealParagraphText(p))
+        obs.unobserve(section)
+      }
+    })
+  }, { threshold: 0.2, rootMargin: '0px 0px -20px 0px' })
+
+  observer.observe(section)
+}
+
+// Apply progressive reveal to About and Contact sections
+setupSectionReveal('.about-section', '.about-text p')
+setupSectionReveal('.contact-section', '.contact-description')
+
 const style = document.createElement("style")
 style.textContent = `
   @keyframes ripple {
@@ -323,9 +375,7 @@ style.textContent = `
     to { opacity: 1; transform: translateY(0); }
   }
   
-  @keyframes particles {
-    to { opacity: 0; transform: translate(-50%, -50%) scale(2); }
-  }
+  /* particles keyframes intentionally omitted here to avoid duplication with CSS file */
 `
 document.head.appendChild(style)
 
