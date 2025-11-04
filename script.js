@@ -59,17 +59,16 @@ window.addEventListener("scroll", () => {
 })
 
 // Form submission
-const recoveryForm = document.getElementById("recoveryForm")
+/*const recoveryForm = document.getElementById("recoveryForm")
 const formSuccess = document.getElementById("formSuccess")
 
 recoveryForm.addEventListener("submit", (e) => {
   e.preventDefault()
 
   // Get form data
-  const formData = new FormData(recoveryForm)
-  const data = Object.fromEntries(formData)
+  
 
-  console.log("[v0] Form submitted with data:", data)
+
 
   // Here you would typically send the data to a server
   // For now, we'll just show the success message
@@ -88,6 +87,41 @@ recoveryForm.addEventListener("submit", (e) => {
     formSuccess.classList.remove("show")
   }, 5000)
 })
+*/
+// Form submission via AJAX simples
+const recoveryForm = document.getElementById("recoveryForm");
+
+recoveryForm.addEventListener("submit", async (e) => {
+  e.preventDefault(); // impede o envio padrão
+
+  const formData = new FormData(recoveryForm);
+
+  try {
+    const response = await fetch("processa_form.php", {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await response.text();
+    
+
+    recoveryForm.style.display = "none"
+  formSuccess.classList.add("show")
+
+  // Scroll to success message
+  formSuccess.scrollIntoView({ behavior: "smooth", block: "center" })
+
+    recoveryForm.reset(); // limpa o formulário após envio
+
+  } catch (error) {
+    console.error(error);
+    alert("❌ Erro ao enviar o formulário. Tente novamente.");
+  }
+});
+
+
+
+
 
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
