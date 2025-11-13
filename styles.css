@@ -1789,3 +1789,39 @@ textarea.form-input {
     grid-template-columns: 1fr;
   }
 }
+/* --- Ajustes finos da logo no header --- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espaço entre imagem e texto */
+  text-decoration: none;
+  animation: slideInLeft 0.8s ease;
+}
+
+.logo img {
+  top: 10px;
+  height: 80px; /* antes era 45px */
+  width: auto;
+  object-fit: contain;
+  margin-right: 8px;
+  vertical-align: middle;
+  transition: transform 0.3s ease;
+  scale: 0.8;
+}
+
+.logo img:hover {
+  transform: scale(1.08);
+}
+
+.logo-text {
+  display: inline-block;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 3s ease infinite;
+  line-height: 1;
+}
