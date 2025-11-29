@@ -669,7 +669,7 @@ body {
   z-index: 2;
 }
 
-.form-section .section-title {
+.form-section .section-title .section-title1 {
   display: inline-block;
 }
 
@@ -681,9 +681,32 @@ body {
   position: relative;
   display: inline-block;
 }
+.section-title1 {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+  position: relative;
+    display: block;
+  margin: 0 auto;
+}
 
 /* Added underline animation to section titles */
-.section-title::after {
+.section-title1::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  border-radius: 2px;
+}
+
+
+.section-title::after { 
   content: "";
   position: absolute;
   bottom: -10px;
@@ -1036,12 +1059,12 @@ textarea.form-input {
 }
 
 /* Hover para títulos na seção de contato e CTA */
-.contact-section .section-title,
+.contact-section .section-title .section-title1,
 .cta-card .cta-title {
   transition: transform 180ms ease, color 180ms ease;
 }
 
-.contact-section .section-title:hover,
+.contact-section .section-title:hover .section-title1:hover,
 .cta-card:hover .cta-title {
   transform: scale(1.06);
   color: var(--color-accent);
@@ -1049,7 +1072,7 @@ textarea.form-input {
 
 @media (prefers-reduced-motion: reduce) {
   .feature-title,
-  .contact-section .section-title,
+  .contact-section .section-title .section-title1,
   .cta-card .cta-title {
     transform: none !important;
     transition: none !important;
@@ -1753,6 +1776,10 @@ textarea.form-input {
     font-size: 2rem;
   }
 
+  .section-title1 {
+    font-size: 1rem;
+  }
+
   .about-grid,
   .contact-grid {
     grid-template-columns: 1fr;
@@ -1781,9 +1808,14 @@ textarea.form-input {
     font-size: 1.75rem;
   }
 
-  .section-title {
+  .section-title  {
     font-size: 1.75rem;
   }
+
+  .section-title  {
+    font-size: 0.75rem;
+  }
+
 
   .testimonials-grid {
     grid-template-columns: 1fr;
@@ -1825,3 +1857,78 @@ textarea.form-input {
   animation: gradientShift 3s ease infinite;
   line-height: 1;
 }
+.album-section {
+  background: #f9fafb;
+  padding: 5rem 0;
+}
+
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.album-item {
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.album-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+
+.fade-in {
+  opacity: 0;
+  transform: scale(0.95);
+  animation: fadeZoom 0.8s ease forwards;
+}
+
+@keyframes fadeZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* ======== MODO ESCURO ======== */
+body.dark-mode {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+body.dark-mode .header,
+body.dark-mode .footer {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+body.dark-mode .section-title .section-title1,
+body.dark-mode .section-description {
+  color: #f8fafc;
+}
+
+body.dark-mode .btn-primary {
+  background: #334155;
+  color: #f8fafc;
+}
+
+body.dark-mode .btn-secondary {
+  background: #475569;
+  color: #f8fafc;
+}
+
+body.dark-mode .nav-link {
+  color: #e2e8f0;
+}
+
