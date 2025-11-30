@@ -2,6 +2,51 @@
 const mobileMenuBtn = document.getElementById("mobileMenuBtn")
 const nav = document.getElementById("nav")
 
+// Dark mode toggle
+const darkToggle = document.getElementById('darkModeToggle')
+
+function applyDarkMode(enabled, save = true) {
+  const el = document.documentElement
+  if (enabled) {
+    el.classList.add('dark')
+    if (darkToggle) {
+      darkToggle.setAttribute('aria-pressed', 'true')
+      darkToggle.textContent = '☀️'
+    }
+  } else {
+    el.classList.remove('dark')
+    if (darkToggle) {
+      darkToggle.setAttribute('aria-pressed', 'false')
+      darkToggle.textContent = '🌙'
+    }
+  }
+
+  if (save) localStorage.setItem('pulso-dark', enabled ? '1' : '0')
+}
+
+// Init dark mode based on saved preference or system preference
+const savedDark = localStorage.getItem('pulso-dark')
+const savedLegacyBool = localStorage.getItem('dark-mode')
+const savedTheme = localStorage.getItem('theme')
+
+if (savedDark !== null) {
+  applyDarkMode(savedDark === '1', false)
+} else if (savedLegacyBool !== null) {
+  applyDarkMode(savedLegacyBool === 'true', false)
+} else if (savedTheme === 'dark') {
+  applyDarkMode(true, false)
+} else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  applyDarkMode(true, false)
+}
+
+if (darkToggle) {
+  darkToggle.setAttribute('role', 'switch')
+  darkToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark')
+    applyDarkMode(!isDark)
+  })
+}
+
 // Adiciona classe `is-loaded` ao <html> quando todos os recursos estiverem carregados.
 // Isso permite pausar animações/transições até o carregamento completo e evitar
 // flicker/movimentos indesejados na renderização inicial.
@@ -428,23 +473,4 @@ images.forEach((img) => {
     img.style.opacity = "1"
   }
 })
-// === MODO ESCURO ===
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleBtn = document.getElementById("darkModeToggle");
-
-  if (toggleBtn) {
-    // Restaura modo salvo
-    if (localStorage.getItem("dark-mode") === "true") {
-      document.body.classList.add("dark-mode");
-    }
-
-    toggleBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark-mode");
-
-      const isDark = document.body.classList.contains("dark-mode");
-      localStorage.setItem("dark-mode", isDark);
-    });
-  } else {
-    console.warn("⚠️ Botão de modo escuro não encontrado no HTML.");
-  }
-});
+// (Removed legacy dark-mode handler: moved to top-level applyDarkMode/localStorage handler)

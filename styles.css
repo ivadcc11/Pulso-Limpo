@@ -18,6 +18,26 @@
   --font-family: "Poppins", sans-serif;
 
   --transition: all 0.3s ease;
+  /* sensible defaults for page/surface so we can switch easily in dark mode */
+  --bg-page: var(--color-white);
+  --bg-surface: var(--color-white);
+}
+
+/* Dark theme overrides (applies when <html> has the class .dark) */
+.dark {
+  --color-primary: #a5b4fc;
+  --color-primary-light: #93c5fd;
+  --color-accent: #fb923c;
+
+  /* force readable white text for dark mode */
+  --color-dark: #ffffff;
+  --color-light: #0b1220;
+  --color-white: #0b1220;
+  --color-gray: #ffffff;
+  --color-gray-light: #1f2937;
+
+  --bg-page: #05060a;
+  --bg-surface: #0b1220;
 }
 
 html {
@@ -70,7 +90,7 @@ body {
   font-family: var(--font-family);
   line-height: 1.6;
   color: var(--color-dark);
-  background-color: var(--color-white);
+  background-color: var(--bg-page, var(--color-white));
 }
 
 .container {
@@ -358,7 +378,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background-color: var(--color-white);
+  background-color: var(--bg-surface, var(--color-white));
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   transition: var(--transition);
@@ -375,7 +395,14 @@ body {
   bottom: 0;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
+  transition: background 300ms ease, backdrop-filter 300ms ease;
   z-index: -1;
+}
+
+/* Dark header surface when dark mode is active */
+.dark .header::before {
+  background: rgba(6, 8, 14, 0.75);
+  backdrop-filter: blur(6px) brightness(0.9);
 }
 
 .header-content {
@@ -411,13 +438,22 @@ body {
 
 .nav {
   display: flex;
-  gap: 2rem;
+  gap: 1.25rem;
+  align-items: center;
+  justify-content: center; /* center the links between logo and buttons */
+  flex: 1 1 auto; /* allow nav to fill space so links stay centered */
+  white-space: nowrap; /* keep links in single line */
+  flex-wrap: nowrap;
+  overflow: visible;
 }
 
 .nav-link {
   text-decoration: none;
   color: var(--color-dark);
   font-weight: 600;
+  display: inline-block;
+  padding: 0.5rem 0.25rem;
+  font-size: 0.95rem;
   transition: var(--transition);
   position: relative;
   animation: fadeInDown 0.6s ease;
@@ -632,8 +668,22 @@ body {
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
+/* Header-specific secondary buttons (e.g. dark-mode toggle) should be visible on light header */
+.header .btn-secondary {
+  color: var(--color-primary);
+  border-color: rgba(30, 58, 138, 0.12);
+  background: transparent;
+  box-shadow: none;
+}
+
+.dark .header .btn-secondary {
+  color: var(--color-white);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 4px 15px rgba(255,255,255,0.06);
+}
+
 .btn-secondary:hover {
-  background-color: var(--color-white);
+  background-color: var(--bg-surface);
   color: var(--color-primary);
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 12px 25px rgba(255, 255, 255, 0.3);
@@ -733,8 +783,13 @@ body {
   animation: gradientShift 15s ease infinite;
 }
 
+/* Dark variant for the gradient form-section */
+.dark .form-section {
+  background: linear-gradient(135deg, rgba(6,8,14,0.85) 0%, rgba(11,16,26,0.94) 100%);
+}
+
 .form {
-  background-color: var(--color-white);
+  background-color: var(--bg-surface);
   padding: 3rem;
   border-radius: 16px;
   box-shadow: 
@@ -932,7 +987,7 @@ textarea.form-input {
   display: none;
   text-align: center;
   padding: 3rem;
-  background-color: var(--color-white);
+  background-color: var(--bg-surface);
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   animation: scaleIn 0.5s ease;
@@ -974,7 +1029,7 @@ textarea.form-input {
 /* About Section */
 .about-section {
   padding: 5rem 0;
-  background-color: var(--color-white);
+  background-color: var(--bg-surface);
 }
 
 .about-grid {
@@ -983,6 +1038,66 @@ textarea.form-input {
   gap: 4rem;
   align-items: center;
 }
+
+/* Professionals Section */
+.professionals-section {
+  padding: 4rem 0;
+  background: linear-gradient(180deg, rgba(250,250,252,0.6), rgba(243,246,250,0.8));
+}
+
+.professional-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.professional-card {
+  background: var(--bg-surface);
+  padding: 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(16,24,40,0.06);
+  border: 1px solid rgba(14,27,70,0.04);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.3s ease;
+  display: flex;
+  gap: 0.75rem;
+  flex-direction: column;
+  align-items: center; /* center icon + title */
+  text-align: center; /* center content */
+}
+
+.professional-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(16,24,40,0.12);
+}
+
+.professional-card h3 {
+  margin-top: 0.25rem;
+  font-size: 1.125rem;
+  color: var(--color-primary);
+}
+
+.professional-card h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  color: var(--color-primary);
+}
+.prof-icon { display: none !important; }
+
+/* dark mode for professionals */
+.dark .professionals-section {
+  background: linear-gradient(180deg, rgba(6,8,14,0.55), rgba(8,10,16,0.92));
+}
+
+.dark .professional-card {
+  background: linear-gradient(180deg, rgba(10,12,18,0.6), rgba(6,8,14,0.85));
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+.dark .professional-card h3 { color: var(--color-white); }
+.dark .professional-card p { color: var(--color-white); opacity: 0.92; }
+
 
 .about-text {
   font-size: 1.125rem;
@@ -1035,7 +1150,7 @@ textarea.form-input {
 }
 
 .feature-item:hover {
-  background-color: var(--color-white);
+  background-color: var(--bg-surface);
   border-color: var(--color-primary);
   box-shadow: 0 8px 25px rgba(30,58,138,0.15);
 }
@@ -1154,7 +1269,7 @@ textarea.form-input {
 }
 
 .testimonial-card {
-  background-color: var(--color-white);
+  background-color: var(--bg-surface);
   /* reduzir ligeiramente o padding superior para aproximar o nome do topo */
   padding: 2rem 2.5rem;
   border-radius: 16px;
@@ -1398,7 +1513,7 @@ textarea.form-input {
 /* Contact Section */
 .contact-section {
   padding: 5rem 0;
-  background-color: var(--color-white);
+  background-color: var(--bg-surface);
 }
 
 .contact-grid {
@@ -1437,7 +1552,7 @@ textarea.form-input {
 }
 
 .contact-item:hover {
-  background-color: var(--color-white);
+  background-color: var(--bg-surface);
   border-color: var(--color-primary);
   /* remove movement on hover (keep visual highlight only) */
   box-shadow: 0 8px 25px rgba(30, 58, 138, 0.1);
@@ -1748,7 +1863,7 @@ textarea.form-input {
     top: 70px;
     left: 0;
     right: 0;
-    background-color: var(--color-white);
+    background-color: var(--bg-surface, var(--color-white));
     flex-direction: column;
     padding: 2rem;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -1825,7 +1940,8 @@ textarea.form-input {
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px; /* Espaço entre imagem e texto */
+  gap: 36px; /* Espaço aumentado entre imagem e texto */
+  margin-right: 2rem; /* espaçamento extra entre logo e nav */
   text-decoration: none;
   animation: slideInLeft 0.8s ease;
 }
@@ -1874,6 +1990,7 @@ textarea.form-input {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
 }
 
 .album-item img {
@@ -1882,6 +1999,127 @@ textarea.form-input {
   object-fit: cover;
   display: block;
   transition: transform 0.5s ease;
+}
+
+.album-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.65) 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 220ms ease, transform 220ms ease;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Global dark-mode color reset: force all text to the readable color in dark mode
+   (intended: user asked every text should be white in dark mode). */
+.dark body,
+.dark body * {
+  color: var(--color-dark) !important;
+}
+
+.album-item:hover .album-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* show caption when focused (keyboard) */
+.album-item:focus-within .album-caption,
+.album-item:focus .album-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Strong dark-mode overrides to remove any remaining white surfaces and force readable text */
+.dark .nav-link,
+.dark .section-title,
+.dark .section-title1,
+.dark .section-description,
+.dark .about-text,
+.dark .feature-text,
+.dark .testimonial-text,
+.dark .author-name,
+.dark .author-location,
+.dark .contact-description,
+.dark .footer-text,
+.dark .footer-links a,
+.dark .contact-value,
+.dark .form-label,
+.dark .form-input,
+.dark .form-success,
+.dark .form,
+.dark .contact-cta,
+.dark .cta-card,
+.dark .testimonial-card,
+.dark .feature-item {
+  color: var(--color-dark) !important; /* var(--color-dark) == white in .dark */
+}
+
+.dark .form {
+  background: linear-gradient(180deg, rgba(9,12,20,0.9), rgba(6,8,14,0.95));
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+
+.dark .form-success,
+.dark .cta-card,
+.dark .policy-card,
+.dark .about-section,
+.dark .contact-section,
+.dark .album-section,
+.dark .footer,
+.dark .testimonials-section {
+  background: linear-gradient(180deg, rgba(6,8,14,0.85), rgba(4,6,10,0.95));
+  border-color: rgba(255,255,255,0.04);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+.dark .form-input {
+  background-color: rgba(255,255,255,0.02) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  color: var(--color-dark) !important;
+}
+
+/* policy page specific: make sticky TOC dark in dark mode */
+.dark .policy-toc {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--color-dark);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+.dark .btn-secondary:hover {
+  background-color: rgba(255,255,255,0.06);
+  color: var(--color-white);
+}
+
+.dark .nav {
+  background: transparent; /* header::before already sets dark surface */
+}
+
+.dark .nav-link::after {
+  background: linear-gradient(90deg, rgba(251,146,60,0.12), rgba(165,180,252,0.18));
+}
+
+/* ensure no white boxes remain by targeting elements that used explicit white */
+.dark [style*="background-color: var(--bg-surface)"] { background-color: var(--bg-surface) }
+
+
+/* Dark theme album area */
+.dark .album-section {
+  background: linear-gradient(180deg, rgba(10,12,18,0.7), rgba(6,8,14,0.9));
+}
+
+.dark .album-caption {
+  background: linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.6) 100%);
+  color: #fff;
 }
 
 
@@ -1901,34 +2139,59 @@ textarea.form-input {
     transform: scale(1);
   }
 }
-/* ======== MODO ESCURO ======== */
-body.dark-mode {
-  background-color: #0f172a;
-  color: #e2e8f0;
+/* Animations and hover for album items */
+.album-item {
+  will-change: transform, box-shadow;
 }
 
-body.dark-mode .header,
-body.dark-mode .footer {
-  background: #1e293b;
-  color: #f1f5f9;
+.album-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.45);
 }
 
-body.dark-mode .section-title .section-title1,
-body.dark-mode .section-description {
-  color: #f8fafc;
+.album-item:hover img {
+  transform: scale(1.08) translateY(-4px);
 }
 
-body.dark-mode .btn-primary {
-  background: #334155;
-  color: #f8fafc;
+/* Add small stagger for album-grid children */
+.album-grid > .album-item:nth-child(1) { animation-delay: 0.05s; }
+.album-grid > .album-item:nth-child(2) { animation-delay: 0.12s; }
+.album-grid > .album-item:nth-child(3) { animation-delay: 0.18s; }
+.album-grid > .album-item:nth-child(4) { animation-delay: 0.24s; }
+.album-grid > .album-item:nth-child(5) { animation-delay: 0.28s; }
+.album-grid > .album-item:nth-child(6) { animation-delay: 0.32s; }
+.album-grid > .album-item:nth-child(7) { animation-delay: 0.36s; }
+.album-grid > .album-item:nth-child(8) { animation-delay: 0.42s; }
+
+/* Dark theme small overrides (replaces legacy body.dark-mode rules) */
+
+.dark body {
+  background-color: var(--bg-page);
+  color: var(--color-dark);
 }
 
-body.dark-mode .btn-secondary {
-  background: #475569;
-  color: #f8fafc;
+.dark .header,
+.dark .footer {
+  background: var(--bg-surface);
+  color: var(--color-dark);
 }
 
-body.dark-mode .nav-link {
-  color: #e2e8f0;
+.dark .section-title,
+.dark .section-description,
+.dark .section-title1 {
+  color: var(--color-dark);
 }
+
+.dark .btn-primary {
+  /* keep the accent but make it readable on dark surfaces */
+  color: var(--color-white);
+}
+
+.dark .btn-secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--color-white);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.dark .nav-link { color: var(--color-dark); }
 
