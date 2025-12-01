@@ -1,416 +1,124 @@
-/* Reset and Base Styles */
+/* ======== BASE ======== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-:root {
-  --color-primary: #1e3a8a;
-  --color-primary-light: #3b82f6;
-  --color-accent: #f97316;
-  --color-dark: #0f172a;
-  --color-light: #f8fafc;
-  --color-white: #ffffff;
-  --color-gray: #475569;
-  --color-gray-light: #e2e8f0;
-
-  --font-family: "Poppins", sans-serif;
-
-  --transition: all 0.3s ease;
-  /* sensible defaults for page/surface so we can switch easily in dark mode */
-  --bg-page: var(--color-white);
-  --bg-surface: var(--color-white);
-}
-
-/* Dark theme overrides (applies when <html> has the class .dark) */
-.dark {
-  --color-primary: #a5b4fc;
-  --color-primary-light: #93c5fd;
-  --color-accent: #fb923c;
-
-  /* force readable white text for dark mode */
-  --color-dark: #ffffff;
-  --color-light: #0b1220;
-  --color-white: #0b1220;
-  --color-gray: #ffffff;
-  --color-gray-light: #1f2937;
-
-  --bg-page: #05060a;
-  --bg-surface: #0b1220;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-/* ---------- Page load animation control ----------
-   Pausa animações e transições até que a página esteja carregada.
-   Isso evita movimentos indesejados e flicker no carregamento inicial.
-   A classe `is-loaded` é adicionada ao <html> via JS quando o evento
-   window.load for disparado. Usuários que preferem reduzir movimento
-   continuarão protegidos por media query. */
-
-html:not(.is-loaded) * {
-  /* Pausa a execução de animações CSS e transições até carregar */
-  animation-play-state: paused !important;
-  transition: none !important;
-}
-
-/* Fade-in suave após carregamento para evitar aparecimento brusco */
-html:not(.is-loaded) body {
-  opacity: 0;
-  will-change: auto;
-}
-
-html.is-loaded body {
-  opacity: 1;
-  transition: opacity 320ms ease-out;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* Respeitar preferência do usuário – manter tudo estático */
-  html:not(.is-loaded) *,
-  html.is-loaded * {
-    animation: none !important;
-    transition: none !important;
-  }
-  html.is-loaded body {
-    transition: none !important;
-  }
-}
-
-/* Compensar header fixo ao usar âncoras: aplica uma margem de rolagem
-   para que o conteúdo não fique oculto atrás do header. Ajuste em px se necessário. */
-[id] {
-  scroll-margin-top: 90px;
+  font-family: "Poppins", sans-serif;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 body {
-  font-family: var(--font-family);
-  line-height: 1.6;
-  color: var(--color-dark);
-  background-color: var(--bg-page, var(--color-white));
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-/* Added professional animations and keyframes */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-/* New advanced animations */
-@keyframes rotateIn {
-  from {
-    opacity: 0;
-    transform: rotate(-180deg) scale(0.5);
-  }
-  to {
-    opacity: 1;
-    transform: rotate(0) scale(1);
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-    transform: scale(0);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes flipIn {
-  from {
-    opacity: 0;
-    transform: perspective(400px) rotateX(-90deg);
-  }
-  to {
-    opacity: 1;
-    transform: perspective(400px) rotateX(0);
-  }
-}
-
-@keyframes swing {
-  20% {
-    transform: rotate(15deg);
-  }
-  40% {
-    transform: rotate(-10deg);
-  }
-  60% {
-    transform: rotate(5deg);
-  }
-  80% {
-    transform: rotate(-5deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
-}
-
-@keyframes heartbeat {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  10%,
-  30% {
-    transform: scale(0.9);
-  }
-  20%,
-  40% {
-    transform: scale(1.1);
-  }
-}
-
-@keyframes glow {
-  0%,
-  100% {
-    box-shadow: 0 0 5px rgba(249, 115, 22, 0.5), 0 0 10px rgba(249, 115, 22, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(249, 115, 22, 0.8), 0 0 30px rgba(249, 115, 22, 0.5), 0 0 40px rgba(249, 115, 22, 0.3);
-  }
-}
-
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes borderPulse {
-  0%,
-  100% {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 0 rgba(30, 58, 138, 0.7);
-  }
-  50% {
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 10px rgba(249, 115, 22, 0);
-  }
-}
-
-@keyframes textGlow {
-  0%,
-  100% {
-    text-shadow: 0 0 10px rgba(249, 115, 22, 0.5), 0 0 20px rgba(249, 115, 22, 0.3);
-  }
-  50% {
-    text-shadow: 0 0 20px rgba(249, 115, 22, 0.8), 0 0 30px rgba(249, 115, 22, 0.5), 0 0 40px rgba(249, 115, 22, 0.3);
-  }
-}
-
-@keyframes wave {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-10px) rotate(5deg);
-  }
-  75% {
-    transform: translateY(10px) rotate(-5deg);
-  }
-}
-
-@keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes particles {
-  0% {
-    transform: translateY(0) translateX(0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100px) translateX(50px) scale(0);
-    opacity: 0;
-  }
-}
-
-
-/* Header */
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background-color: var(--bg-surface, var(--color-white));
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  transition: var(--transition);
-  animation: fadeInDown 0.6s ease;
-}
-
-/* Enhanced header with backdrop blur effect */
-.header::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  transition: background 300ms ease, backdrop-filter 300ms ease;
-  z-index: -1;
-}
-
-/* Dark header surface when dark mode is active */
-.dark .header::before {
-  background: rgba(6, 8, 14, 0.75);
-  backdrop-filter: blur(6px) brightness(0.9);
-}
-
-.header-content {
+  background-color: #f9f9f9;
+  color: #222;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
 }
+
+/* ======== BOTÃO MODO ESCURO ======== */
+.dark-mode-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: linear-gradient(135deg, #007bff, #00d4ff);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark-mode-btn:hover {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* ======== TEMA CLARO PADRÃO ======== */
+header {
+  text-align: center;
+  padding: 60px 20px 40px;
+  background: linear-gradient(135deg, #00c3ff, #007bff);
+  color: white;
+  animation: fadeIn 1s ease forwards;
+}
+
+main {
+  padding: 40px 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+section {
+  margin-bottom: 40px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideUp 0.7s ease forwards;
+}
+
+section:nth-child(1) { animation-delay: 0.2s; }
+section:nth-child(2) { animation-delay: 0.4s; }
+section:nth-child(3) { animation-delay: 0.6s; }
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #007bff;
+  color: white;
+}
+
+/* ======== TEMA ESCURO ======== */
+body.dark-mode {
+  background-color: #0d1117;
+  color: #e6edf3;
+}
+
+body.dark-mode header {
+  background: linear-gradient(135deg, #111827, #1f2937);
+  color: #00d4ff;
+}
+
+body.dark-mode footer {
+  background-color: #1f2937;
+  color: #9ca3af;
+}
+
+body.dark-mode .dark-mode-btn {
+  background: linear-gradient(135deg, #222, #555);
+  color: #ffd700;
+}
+
+/* ======== ANIMAÇÕES ======== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======== RESPONSIVIDADE ======== */
+@media (max-width: 768px) {
+  header {
+    padding: 40px 10px;
+  }
+
+  .dark-mode-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+}
+
+
+/* cleaned stray rules removed */
 
 .logo {
   text-decoration: none;
@@ -438,22 +146,13 @@ body {
 
 .nav {
   display: flex;
-  gap: 1.25rem;
-  align-items: center;
-  justify-content: center; /* center the links between logo and buttons */
-  flex: 1 1 auto; /* allow nav to fill space so links stay centered */
-  white-space: nowrap; /* keep links in single line */
-  flex-wrap: nowrap;
-  overflow: visible;
+  gap: 2rem;
 }
 
 .nav-link {
   text-decoration: none;
   color: var(--color-dark);
   font-weight: 600;
-  display: inline-block;
-  padding: 0.5rem 0.25rem;
-  font-size: 0.95rem;
   transition: var(--transition);
   position: relative;
   animation: fadeInDown 0.6s ease;
@@ -668,22 +367,8 @@ body {
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
-/* Header-specific secondary buttons (e.g. dark-mode toggle) should be visible on light header */
-.header .btn-secondary {
-  color: var(--color-primary);
-  border-color: rgba(30, 58, 138, 0.12);
-  background: transparent;
-  box-shadow: none;
-}
-
-.dark .header .btn-secondary {
-  color: var(--color-white);
-  border-color: rgba(255,255,255,0.12);
-  box-shadow: 0 4px 15px rgba(255,255,255,0.06);
-}
-
 .btn-secondary:hover {
-  background-color: var(--bg-surface);
+  background-color: var(--color-white);
   color: var(--color-primary);
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 12px 25px rgba(255, 255, 255, 0.3);
@@ -719,7 +404,7 @@ body {
   z-index: 2;
 }
 
-.form-section .section-title .section-title1 {
+.form-section .section-title {
   display: inline-block;
 }
 
@@ -731,32 +416,9 @@ body {
   position: relative;
   display: inline-block;
 }
-.section-title1 {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 1rem;
-  position: relative;
-    display: block;
-  margin: 0 auto;
-}
 
 /* Added underline animation to section titles */
-.section-title1::after {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
-  border-radius: 2px;
-}
-
-
-.section-title::after { 
+.section-title::after {
   content: "";
   position: absolute;
   bottom: -10px;
@@ -783,13 +445,8 @@ body {
   animation: gradientShift 15s ease infinite;
 }
 
-/* Dark variant for the gradient form-section */
-.dark .form-section {
-  background: linear-gradient(135deg, rgba(6,8,14,0.85) 0%, rgba(11,16,26,0.94) 100%);
-}
-
 .form {
-  background-color: var(--bg-surface);
+  background-color: var(--color-white);
   padding: 3rem;
   border-radius: 16px;
   box-shadow: 
@@ -987,7 +644,7 @@ textarea.form-input {
   display: none;
   text-align: center;
   padding: 3rem;
-  background-color: var(--bg-surface);
+  background-color: var(--color-white);
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   animation: scaleIn 0.5s ease;
@@ -1029,7 +686,7 @@ textarea.form-input {
 /* About Section */
 .about-section {
   padding: 5rem 0;
-  background-color: var(--bg-surface);
+  background-color: var(--color-white);
 }
 
 .about-grid {
@@ -1038,66 +695,6 @@ textarea.form-input {
   gap: 4rem;
   align-items: center;
 }
-
-/* Professionals Section */
-.professionals-section {
-  padding: 4rem 0;
-  background: linear-gradient(180deg, rgba(250,250,252,0.6), rgba(243,246,250,0.8));
-}
-
-.professional-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.professional-card {
-  background: var(--bg-surface);
-  padding: 1.25rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(16,24,40,0.06);
-  border: 1px solid rgba(14,27,70,0.04);
-  transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.3s ease;
-  display: flex;
-  gap: 0.75rem;
-  flex-direction: column;
-  align-items: center; /* center icon + title */
-  text-align: center; /* center content */
-}
-
-.professional-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(16,24,40,0.12);
-}
-
-.professional-card h3 {
-  margin-top: 0.25rem;
-  font-size: 1.125rem;
-  color: var(--color-primary);
-}
-
-.professional-card h3 {
-  margin: 0;
-  font-size: 1.125rem;
-  color: var(--color-primary);
-}
-.prof-icon { display: none !important; }
-
-/* dark mode for professionals */
-.dark .professionals-section {
-  background: linear-gradient(180deg, rgba(6,8,14,0.55), rgba(8,10,16,0.92));
-}
-
-.dark .professional-card {
-  background: linear-gradient(180deg, rgba(10,12,18,0.6), rgba(6,8,14,0.85));
-  border: 1px solid rgba(255,255,255,0.04);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-}
-
-.dark .professional-card h3 { color: var(--color-white); }
-.dark .professional-card p { color: var(--color-white); opacity: 0.92; }
-
 
 .about-text {
   font-size: 1.125rem;
@@ -1150,7 +747,7 @@ textarea.form-input {
 }
 
 .feature-item:hover {
-  background-color: var(--bg-surface);
+  background-color: var(--color-white);
   border-color: var(--color-primary);
   box-shadow: 0 8px 25px rgba(30,58,138,0.15);
 }
@@ -1174,12 +771,12 @@ textarea.form-input {
 }
 
 /* Hover para títulos na seção de contato e CTA */
-.contact-section .section-title .section-title1,
+.contact-section .section-title,
 .cta-card .cta-title {
   transition: transform 180ms ease, color 180ms ease;
 }
 
-.contact-section .section-title:hover .section-title1:hover,
+.contact-section .section-title:hover,
 .cta-card:hover .cta-title {
   transform: scale(1.06);
   color: var(--color-accent);
@@ -1187,7 +784,7 @@ textarea.form-input {
 
 @media (prefers-reduced-motion: reduce) {
   .feature-title,
-  .contact-section .section-title .section-title1,
+  .contact-section .section-title,
   .cta-card .cta-title {
     transform: none !important;
     transition: none !important;
@@ -1269,7 +866,7 @@ textarea.form-input {
 }
 
 .testimonial-card {
-  background-color: var(--bg-surface);
+  background-color: var(--color-white);
   /* reduzir ligeiramente o padding superior para aproximar o nome do topo */
   padding: 2rem 2.5rem;
   border-radius: 16px;
@@ -1513,7 +1110,7 @@ textarea.form-input {
 /* Contact Section */
 .contact-section {
   padding: 5rem 0;
-  background-color: var(--bg-surface);
+  background-color: var(--color-white);
 }
 
 .contact-grid {
@@ -1552,7 +1149,7 @@ textarea.form-input {
 }
 
 .contact-item:hover {
-  background-color: var(--bg-surface);
+  background-color: var(--color-white);
   border-color: var(--color-primary);
   /* remove movement on hover (keep visual highlight only) */
   box-shadow: 0 8px 25px rgba(30, 58, 138, 0.1);
@@ -1863,7 +1460,7 @@ textarea.form-input {
     top: 70px;
     left: 0;
     right: 0;
-    background-color: var(--bg-surface, var(--color-white));
+    background-color: var(--color-white);
     flex-direction: column;
     padding: 2rem;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -1889,10 +1486,6 @@ textarea.form-input {
 
   .section-title {
     font-size: 2rem;
-  }
-
-  .section-title1 {
-    font-size: 1rem;
   }
 
   .about-grid,
@@ -1923,14 +1516,9 @@ textarea.form-input {
     font-size: 1.75rem;
   }
 
-  .section-title  {
+  .section-title {
     font-size: 1.75rem;
   }
-
-  .section-title  {
-    font-size: 0.75rem;
-  }
-
 
   .testimonials-grid {
     grid-template-columns: 1fr;
@@ -1940,8 +1528,7 @@ textarea.form-input {
 .logo {
   display: flex;
   align-items: center;
-  gap: 36px; /* Espaço aumentado entre imagem e texto */
-  margin-right: 2rem; /* espaçamento extra entre logo e nav */
+  gap: 10px; /* Espaço entre imagem e texto */
   text-decoration: none;
   animation: slideInLeft 0.8s ease;
 }
@@ -1973,384 +1560,6 @@ textarea.form-input {
   animation: gradientShift 3s ease infinite;
   line-height: 1;
 }
-.album-section {
-  background: #f9fafb;
-  padding: 5rem 0;
-}
 
-.album-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.album-item {
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  position: relative;
-}
-
-.album-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s ease;
-}
-
-.album-caption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 1rem 1.25rem;
-  background: linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.65) 100%);
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 220ms ease, transform 220ms ease;
-  display: flex;
-  align-items: flex-end;
-}
-
-/* Global dark-mode color reset: force all text to the readable color in dark mode
-   (intended: user asked every text should be white in dark mode). */
-.dark body,
-.dark body * {
-  color: var(--color-dark) !important;
-}
-
-.album-item:hover .album-caption {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* show caption when focused (keyboard) */
-.album-item:focus-within .album-caption,
-.album-item:focus .album-caption {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Strong dark-mode overrides to remove any remaining white surfaces and force readable text */
-.dark .nav-link,
-.dark .section-title,
-.dark .section-title1,
-.dark .section-description,
-.dark .about-text,
-.dark .feature-text,
-.dark .testimonial-text,
-.dark .author-name,
-.dark .author-location,
-.dark .contact-description,
-.dark .footer-text,
-.dark .footer-links a,
-.dark .contact-value,
-.dark .form-label,
-.dark .form-input,
-.dark .form-success,
-.dark .form,
-.dark .contact-cta,
-.dark .cta-card,
-.dark .testimonial-card,
-.dark .feature-item {
-  color: var(--color-dark) !important; /* var(--color-dark) == white in .dark */
-}
-
-.dark .form {
-  background: linear-gradient(180deg, rgba(9,12,20,0.9), rgba(6,8,14,0.95));
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-}
-
-.dark .form-success,
-.dark .cta-card,
-.dark .policy-card,
-.dark .about-section,
-.dark .contact-section,
-.dark .album-section,
-.dark .footer,
-.dark .testimonials-section {
-  background: linear-gradient(180deg, rgba(6,8,14,0.85), rgba(4,6,10,0.95));
-  border-color: rgba(255,255,255,0.04);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-}
-
-.dark .form-input {
-  background-color: rgba(255,255,255,0.02) !important;
-  border: 1px solid rgba(255,255,255,0.06) !important;
-  color: var(--color-dark) !important;
-}
-
-/* policy page specific: make sticky TOC dark in dark mode */
-.dark .policy-toc {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  color: var(--color-dark);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-}
-
-.dark .btn-secondary:hover {
-  background-color: rgba(255,255,255,0.06);
-  color: var(--color-white);
-}
-
-.dark .nav {
-  background: transparent; /* header::before already sets dark surface */
-}
-
-.dark .nav-link::after {
-  background: linear-gradient(90deg, rgba(251,146,60,0.12), rgba(165,180,252,0.18));
-}
-
-/* ensure no white boxes remain by targeting elements that used explicit white */
-.dark [style*="background-color: var(--bg-surface)"] { background-color: var(--bg-surface) }
-
-
-/* Dark theme album area */
-.dark .album-section {
-  background: linear-gradient(180deg, rgba(10,12,18,0.7), rgba(6,8,14,0.9));
-}
-
-.dark .album-caption {
-  background: linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.6) 100%);
-  color: #fff;
-}
-
-
-.fade-in {
-  opacity: 0;
-  transform: scale(0.95);
-  animation: fadeZoom 0.8s ease forwards;
-}
-
-@keyframes fadeZoom {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-/* Animations and hover for album items */
-.album-item {
-  will-change: transform, box-shadow;
-}
-
-.album-item:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.45);
-}
-
-.album-item:hover img {
-  transform: scale(1.08) translateY(-4px);
-}
-
-/* Add small stagger for album-grid children */
-.album-grid > .album-item:nth-child(1) { animation-delay: 0.05s; }
-.album-grid > .album-item:nth-child(2) { animation-delay: 0.12s; }
-.album-grid > .album-item:nth-child(3) { animation-delay: 0.18s; }
-.album-grid > .album-item:nth-child(4) { animation-delay: 0.24s; }
-.album-grid > .album-item:nth-child(5) { animation-delay: 0.28s; }
-.album-grid > .album-item:nth-child(6) { animation-delay: 0.32s; }
-.album-grid > .album-item:nth-child(7) { animation-delay: 0.36s; }
-.album-grid > .album-item:nth-child(8) { animation-delay: 0.42s; }
-
-/* Dark theme small overrides (replaces legacy body.dark-mode rules) */
-
-.dark body {
-  background-color: var(--bg-page);
-  color: var(--color-dark);
-}
-
-.dark .header,
-.dark .footer {
-  background: var(--bg-surface);
-  color: var(--color-dark);
-}
-
-.dark .section-title,
-.dark .section-description,
-.dark .section-title1 {
-  color: var(--color-dark);
-}
-
-.dark .btn-primary {
-  /* keep the accent but make it readable on dark surfaces */
-  color: var(--color-white);
-}
-
-.dark .btn-secondary {
-  background: rgba(255,255,255,0.06);
-  color: var(--color-white);
-  border-color: rgba(255,255,255,0.12);
-}
-
-.dark .nav-link { color: var(--color-dark); }
-
-/* =========================
-   MENU MOBILE
-========================= */
-
-.mobile-menu-btn {
-  display: none;
-  flex-direction: column;
-  gap: 6px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-.mobile-menu-btn span {
-  width: 25px;
-  height: 3px;
-  background: #000;
-  display: block;
-}
-
-/* NAV NORMAL (DESKTOP) */
-.nav {
-  display: flex;
-  gap: 20px;
-}
-
-/* =========================
-   AJUSTE PARA CELULAR
-========================= */
-@media (max-width: 768px) {
-
-  .mobile-menu-btn {
-    display: flex;
-  }
-
-  .nav {
-    position: fixed;
-    top: 70px; /* abaixo do header */
-    right: -100%;
-    width: 100%;
-    height: calc(100vh - 70px);
-    background: #fff;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: right 0.3s ease;
-    z-index: 1000;
-  }
-
-  .nav.active {
-    right: 0;
-  }
-
-  .nav a {
-    font-size: 1.2rem;
-    margin: 15px 0;
-  }
-}
-/* =========================
-   HEADER FIXO
-========================= */
-.header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-  background: #fff;
-}
-
-/* Evita que o conteúdo fique escondido atrás do header */
-body {
-  padding-top: 80px;
-}
-
-/* =========================
-   BOTÃO HAMBÚRGUER
-========================= */
-.mobile-menu-btn {
-  display: none;
-  flex-direction: column;
-  gap: 6px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1002;
-}
-
-.mobile-menu-btn span {
-  width: 26px;
-  height: 3px;
-  background: #000;
-  border-radius: 2px;
-  display: block;
-}
-
-/* =========================
-   MENU DESKTOP
-========================= */
-.nav {
-  display: flex;
-  gap: 20px;
-}
-
-/* =========================
-   MENU MOBILE
-========================= */
-@media (max-width: 768px) {
-
-  .mobile-menu-btn {
-    display: flex;
-  }
-
-  .nav {
-    position: fixed;
-    top: 80px; /* MESMA ALTURA DO HEADER */
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 80px);
-    background: #fff;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-
-    padding-top: 40px;
-    gap: 22px;
-
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    z-index: 1001;
-
-    overflow-y: auto;
-  }
-
-  .nav.active {
-    transform: translateX(0);
-  }
-
-  .nav a {
-    font-size: 1.2rem;
-  }
-}
-/* =========================
-   AJUSTE MENU MOBILE NO DARK MODE
-========================= */
-
-.dark .nav {
-  background: #111; /* fundo escuro real */
-}
-
-.dark .nav a {
-  color: #fff;
-}
-
-.dark .mobile-menu-btn span {
-  background: #fff;
-}
+/* ======== BOTÃO MODO ESCURO ======== */
+/* dark-mode button rules already defined earlier (kept the first occurrence) */
