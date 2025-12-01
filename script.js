@@ -428,3 +428,23 @@ images.forEach((img) => {
     img.style.opacity = "1"
   }
 })
+// === MODO ESCURO ===
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("darkModeToggle");
+
+  if (toggleBtn) {
+    // Restaura modo salvo
+    if (localStorage.getItem("dark-mode") === "true") {
+      document.body.classList.add("dark-mode");
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+
+      const isDark = document.body.classList.contains("dark-mode");
+      localStorage.setItem("dark-mode", isDark);
+    });
+  } else {
+    console.warn("⚠️ Botão de modo escuro não encontrado no HTML.");
+  }
+});
